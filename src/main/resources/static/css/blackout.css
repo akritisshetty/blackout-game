@@ -477,12 +477,19 @@ table.tactical tr:hover td { background: rgba(57, 255, 136, .03); }
 .footer-note a:hover { color: var(--ink); border-bottom-color: var(--ink); }
 
 .built-by {
-  margin-top: 10px;
+  position: fixed;
+  bottom: 32px;
+  left: 0;
+  right: 0;
+  padding: 10px 0;
   text-align: center;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
   color: var(--ink-dim);
+  background: var(--bg);
+  border-top: 1px solid rgba(57,255,136,0.1);
+  z-index: 100;
 }
 .built-by a { color: var(--neon-dim); text-decoration: none; border-bottom: 1px dotted var(--neon-dim); }
 .built-by a:hover { color: var(--neon); border-bottom-color: var(--neon); }
