@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size;
 public record AgentRegistrationRequest(
 
         @NotBlank(message = "codename is required")
-        @Size(min = 3, max = 40, message = "codename must be 3-40 characters")
+        @Size(min = 2, max = 40, message = "codename must be 2-40 characters")
         @Pattern(regexp = "[A-Za-z0-9_-]+", message = "codename allows letters, digits, dash and underscore only")
         String codename) {
 }
