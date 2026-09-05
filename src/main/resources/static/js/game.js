@@ -20,13 +20,13 @@
   const BLURB = {
     SEAL_INTEL: 'Encrypt a message with the Playfair cipher.',
     CRACK_BROADCAST: 'Decrypt an intercepted message.',
-    TAMPER_HUNT: 'One of three packages was tampered with. Find it.',
+    TAMPER_HUNT: 'Only one of three packages is genuine - the other two carry forged SHA-256 seals. Find it.',
     SECRET_DROP: 'Unlock a hidden keyword with your RSA badge, then decrypt.'
   };
   const EXPLAIN = {
     SEAL_INTEL: 'How it works: The keyword builds a 5×5 grid (I/J share a cell). Plaintext is uppercased → J→I → split into digraphs; duplicate letters in a pair get an X filler. Each digraph: same row = shift right, same column = shift down, else rectangle = swap columns.',
     CRACK_BROADCAST: 'How it works: Same 5×5 grid, but reverse — same row = shift left, same column = shift up, rectangle = swap columns. Filler Xs inserted during encryption remain; both clean phrase and padded form are accepted.',
-    TAMPER_HUNT: 'How it works: At burial each package was sealed as SHA-256(payload + "|" + keyBlob). To verify, we recompute that hash for all 3 packages and compare to the stored seal. 2 match (INTACT), 1 mismatches (ALTERED) — that one was tampered. SHA-256 changes completely if even one letter is altered.',
+    TAMPER_HUNT: 'How it works: At burial each package was sealed as SHA-256(payload + "|" + keyBlob). Only ONE of the three stored seals is genuine - the other two are forged digests. To verify, recompute SHA-256(payload + "|" + keyBlob) for every package (press HASH, or type that exact string into the enigma desktop helper) and compare with the stored seal. The one seal that matches (INTACT) is the real package; a forged seal can never match, because SHA-256 changes completely if even one letter differs.',
     SECRET_DROP: 'How it works: Step 1 — RSA-2048 OAEP-SHA256: your browser public badge encrypted the keyword; your private badge (in localStorage, never sent) decrypts it. Step 2 — build Playfair grid from that keyword and decrypt the ciphertext with reverse Playfair rules.'
   };
 
@@ -188,7 +188,7 @@
     } else if (mission.type === 'CRACK_BROADCAST') {
       text = ans + 'Calculated: grid from "' + d.keyword + '", ciphertext "' + d.cipherText + '" → digraphs → reverse: row→left, col→up, rectangle→swap cols. Both clean phrase and X-padded form accepted.';
     } else if (mission.type === 'TAMPER_HUNT') {
-      text = ans + 'Calculated: SHA-256(payload + "|" + keyBlob) recomputed for each package and compared to stored seal. Exactly one mismatches — that\'s the fake. SHA-256 changes completely if even one letter is altered (avalanche effect).';
+      text = ans + 'Calculated: SHA-256(payload + "|" + keyBlob) recomputed for each package and compared to its stored seal. Exactly ONE matches (INTACT) - that single package is genuine; the other two seals are forgeries. SHA-256 changes completely if even one letter is altered (avalanche effect).';
     } else if (mission.type === 'SECRET_DROP') {
       text = ans + 'Calculated in 2 steps: 1) RSA-OAEP-SHA256 decrypt of the locked keyword with your browser private badge → keyword. 2) Build Playfair grid from that keyword and reverse-decrypt "' + d.cipherText + '".';
     }
@@ -280,8 +280,9 @@
       let picked = null;
       const table = el('table', { class: 'tactical' },
         el('thead', {}, el('tr', {},
-          el('th', { text: 'PICK THE FAKE' }), el('th', { text: 'ID' }),
-          el('th', { text: 'PAYLOAD' }), el('th', { text: 'SEAL' }), el('th', { text: 'HASH CHECK' }))),
+          el('th', { text: 'PICK THE GENUINE' }), el('th', { text: 'ID' }),
+          el('th', { text: 'PAYLOAD' }), el('th', { text: 'KEY BLOB' }),
+          el('th', { text: 'SEAL' }), el('th', { text: 'HASH CHECK' }))),
         el('tbody'));
 
       d.packages.forEach((pkg) => {
@@ -300,20 +301,21 @@
               el('span', { class: 'dot ' + (ok ? 'green' : 'red') }),
               document.createTextNode(ok ? 'INTACT' : 'ALTERED!'));
             setStatus(ok ? 'secure' : 'breach',
-              'package #' + pkg.id + ': ' + (ok ? 'intact' : 'ALTERED'));
+              'package #' + pkg.id + ': ' + (ok ? 'genuine seal - pick this one' : 'FORGED seal'));
           }
         }, 'HASH'));
         table.querySelector('tbody').append(el('tr', {},
           el('td', {}, radio),
           el('td', { text: '#' + pkg.id }),
           el('td', { class: 'trunc', title: pkg.payload, text: pkg.payload }),
+          el('td', { class: 'mono-block dim', title: pkg.payload + '|' + pkg.keyBlob, text: pkg.keyBlob }),
           el('td', { class: 'trunc', title: pkg.seal, text: short(pkg.seal, 12, 8) }),
           cell));
       });
 
       return el('div', { class: 'panel' },
         header(mission.type),
-        row('RULE', el('span', { class: 'hint', text: d.formula + '. Press HASH on all three, then pick the ALTERED one.' })),
+        row('RULE', el('span', { class: 'hint', text: d.formula + '. Press HASH on all three (or type payload|keyBlob into the enigma helper), then pick the INTACT one.' })),
         table,
         el('div', { class: 'btn-row' },
           el('button', {

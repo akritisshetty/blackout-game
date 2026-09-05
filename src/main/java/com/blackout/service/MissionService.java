@@ -20,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,8 +44,14 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class MissionService {
 
-    /** Packages shown per TAMPER_HUNT mission; exactly one is fake. */
+    /** Packages shown per TAMPER_HUNT mission; exactly one carries a genuine seal. */
     private static final int HUNT_PACKAGE_COUNT = 3;
+
+    /** Short human-copyable drop key - small enough to type into the enigma helper. */
+    private static final int DROP_KEY_LENGTH = 10;
+
+    /** No ambiguous 0/O/1/I characters. */
+    private static final String DROP_KEY_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
     private final MissionSessionStore store;
     private final AgentService agentService;
@@ -108,24 +113,24 @@ public class MissionService {
                 MissionBank.sanitize(phrase), PlayfairEngine.decrypt(cipher, keyword), null);
     }
 
-    /** 3) Find the one package whose payload no longer matches its SHA-256 seal. */
+    /** 3) Find the one package whose seal is genuine - the other two carry forged digests. */
     private PendingMission tamperHunt(String codename) {
         List<PendingMission.AuditPackage> packages = new ArrayList<>(HUNT_PACKAGE_COUNT);
         Set<Long> usedIds = new HashSet<>();
-        int fakeIndex = ThreadLocalRandom.current().nextInt(HUNT_PACKAGE_COUNT);
+        int genuineIndex = ThreadLocalRandom.current().nextInt(HUNT_PACKAGE_COUNT);
 
         for (int i = 0; i < HUNT_PACKAGE_COUNT; i++) {
             String phrase = MissionBank.randomPhrase();
             String keyword = MissionBank.randomKeyword();
             String payload = PlayfairEngine.encrypt(phrase, keyword);
-            String keyBlob = randomBlob();
-            String seal = DeadDropProtocol.computeSeal(payload, keyBlob);
-
-            if (i == fakeIndex) {
-                payload = flipLastLetter(payload); // altered AFTER sealing - seal stays frozen
-            }
+            String dropKey = randomDropKey();
+            // Exactly ONE package is sealed truthfully; the other two carry a forged digest
+            // over unrelated content, so re-hashing payload|keyBlob will never match them.
+            String seal = i == genuineIndex
+                    ? DeadDropProtocol.computeSeal(payload, dropKey)
+                    : randomForgedSeal();
             packages.add(new PendingMission.AuditPackage(
-                    nextUniqueId(usedIds), payload, keyBlob, seal, i == fakeIndex));
+                    nextUniqueId(usedIds), payload, dropKey, seal, i != genuineIndex));
         }
 
         List<Map<String, Object>> visible = packages.stream()
@@ -143,11 +148,11 @@ public class MissionService {
         data.put("formula", "SHA-256( payload + '|' + keyBlob ) must equal seal");
         data.put("packages", visible);
 
-        long fakeId = packages.stream()
-                .filter(PendingMission.AuditPackage::tampered)
+        long genuineId = packages.stream()
+                .filter(pkg -> !pkg.tampered())
                 .findFirst().orElseThrow().id();
         return pending(codename, MissionType.TAMPER_HUNT, data,
-                "package #" + fakeId, null, packages);
+                "package #" + genuineId, null, packages);
     }
 
     /** 4) The keyword is locked under the agent's own RSA badge; unwrap, then decrypt. */
@@ -215,7 +220,7 @@ public class MissionService {
             case CRACK_BROADCAST, SECRET_DROP ->
                     matches(PlayfairEngine.normalize(orEmpty(request.plainText())),
                             mission.getExpectedAnswer(), mission.getExpectedAlternative());
-            case TAMPER_HUNT -> flaggedExactlyTheFake(mission, request.flaggedTamperedIds());
+            case TAMPER_HUNT -> flaggedExactlyTheGenuine(mission, request.flaggedTamperedIds());
         };
     }
 
@@ -229,12 +234,13 @@ public class MissionService {
         return okPrimary || okAlternative;
     }
 
-    private static boolean flaggedExactlyTheFake(PendingMission mission, List<Long> flagged) {
+    /** Accepts the submission only when flagged is exactly the one GENUINE package. */
+    private static boolean flaggedExactlyTheGenuine(PendingMission mission, List<Long> flagged) {
         if (flagged == null || flagged.size() != 1) {
-            return false; // exactly ONE fake - flag exactly one package
+            return false; // exactly ONE genuine seal - flag exactly one package
         }
         return mission.getAuditPackages().stream()
-                .filter(PendingMission.AuditPackage::tampered)
+                .filter(pkg -> !pkg.tampered())
                 .allMatch(pkg -> pkg.id() == flagged.get(0));
     }
 
@@ -267,11 +273,18 @@ public class MissionService {
                 .build();
     }
 
-    /** Random stand-in for an RSA blob - TAMPER_HUNT packages are dressing, not puzzles. */
-    private String randomBlob() {
-        byte[] blob = new byte[256];
-        secureRandom.nextBytes(blob);
-        return Base64.getEncoder().encodeToString(blob);
+    /** Short alphanumeric drop key shown to the agent so they can re-hash with the enigma helper. */
+    private String randomDropKey() {
+        StringBuilder sb = new StringBuilder(DROP_KEY_LENGTH);
+        for (int i = 0; i < DROP_KEY_LENGTH; i++) {
+            sb.append(DROP_KEY_CHARS.charAt(secureRandom.nextInt(DROP_KEY_CHARS.length())));
+        }
+        return sb.toString();
+    }
+
+    /** A well-formed 64-hex digest over unrelated content - plausible but never the real seal. */
+    private String randomForgedSeal() {
+        return DeadDropProtocol.computeSeal(randomDropKey(), randomDropKey());
     }
 
     private static long nextUniqueId(Set<Long> used) {
@@ -280,12 +293,6 @@ public class MissionService {
             id = 100 + ThreadLocalRandom.current().nextLong(900);
         } while (!used.add(id));
         return id;
-    }
-
-    private static String flipLastLetter(String payload) {
-        char last = payload.charAt(payload.length() - 1);
-        char replacement = last == 'Z' ? 'A' : (char) (last + 1);
-        return payload.substring(0, payload.length() - 1) + replacement;
     }
 
     /** "GYIZSC" -> "GY IZ SC" - readable letter pairs for intercepted traffic. */

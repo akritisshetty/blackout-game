@@ -131,25 +131,27 @@ class GameFlowIntegrationTest {
     }
 
     @Test
-    @DisplayName("FIND THE FAKE: exactly one tampered package; recomputing the hash finds it")
+    @DisplayName("FIND THE FAKE: exactly one genuine seal; recomputing the hash finds it")
     void tamperHunt() throws Exception {
         postJson("/api/agents", "{\"codename\":\"hunt-agent\"}");
         JsonNode mission = newMission("hunt-agent", "TAMPER_HUNT");
 
-        long fakeId = -1;
-        int tamperedCount = 0;
+        long genuineId = -1;
+        int forgedCount = 0;
         for (JsonNode pkg : mission.get("data").get("packages")) {
             boolean intact = DeadDropProtocol.verifySeal(
                     pkg.get("payload").asText(), pkg.get("keyBlob").asText(), pkg.get("seal").asText());
-            if (!intact) {
-                tamperedCount++;
-                fakeId = pkg.get("id").asLong();
+            if (intact) {
+                genuineId = pkg.get("id").asLong();
+            } else {
+                forgedCount++;
             }
         }
-        assertThat(tamperedCount).isEqualTo(1);
+        assertThat(forgedCount).isEqualTo(2);
+        assertThat(genuineId).isNotEqualTo(-1);
 
         JsonNode solved = postJson("/api/missions/hunt-agent/solve",
-                "{\"token\":\"" + mission.get("token").asText() + "\",\"flaggedTamperedIds\":[" + fakeId + "]}");
+                "{\"token\":\"" + mission.get("token").asText() + "\",\"flaggedTamperedIds\":[" + genuineId + "]}");
         assertThat(solved.get("correct").asBoolean()).isTrue();
         assertThat(solved.get("pointsAwarded").asInt()).isEqualTo(20);
     }

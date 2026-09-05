@@ -18,7 +18,7 @@ They always come in this order:
 |---|---|---|---|
 | 1 | **SEAL THE INTEL** | Encrypt the message with the keyword using the Playfair grid | +10 |
 | 2 | **CRACK THE CODE** | Decrypt the message with the given keyword | +15 |
-| 3 | **FIND THE FAKE** | Three packages, one was tampered. Press HASH on each - the one showing ALTERED is the fake. Pick it. | +20 |
+| 3 | **FIND THE FAKE** | Three packages, only one is genuine. Press HASH on each (or re-hash `payload|keyBlob` in the enigma helper) - the one showing INTACT is the real package; the other two carry forged seals. Pick it. | +20 |
 | 4 | **SECRET DROP** | Press UNLOCK (your browser's RSA key opens the lock), then decrypt the message | +25 |
 
 ## Scoring
@@ -32,7 +32,7 @@ They always come in this order:
 
 1. **Playfair cipher** (missions 1, 2, 4) - a 150-year-old letter-pair cipher. The keyword builds a 5x5 grid; pairs of letters are replaced by other pairs.
 2. **RSA-2048** (mission 4) - real modern encryption. Your browser creates a secret key the server never sees; the server locks things that only your key can open.
-3. **SHA-256** (mission 3) - a fingerprint of data. Change even one letter and the fingerprint stops matching - that's how you spot the fake.
+3. **SHA-256** (mission 3) - a fingerprint of data. Two packages carry forged seals; only the genuine one's recomputed hash matches. Change even one letter and the fingerprint stops matching - that's how you spot the real package.
 
 ## Enigma — Local Helper (clone-only)
 

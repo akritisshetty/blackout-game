@@ -24,8 +24,8 @@ public enum MissionType {
     TAMPER_HUNT(
             "FIND THE FAKE",
             "SHA-256 integrity",
-            "Exactly ONE package below was secretly altered after it was sealed. "
-                    + "Press HASH on each and pick the fake.",
+            "Only ONE package below is genuine - the other two carry forged SHA-256 seals. "
+                    + "Press HASH on each (or re-hash with the enigma helper) and pick the real one.",
             20),
 
     SECRET_DROP(
