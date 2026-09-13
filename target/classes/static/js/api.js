@@ -44,6 +44,8 @@
       request('POST', '/api/tools/playfair/seal', { message, keyword }),
     playfairOpen: (cipherText, keyword) =>
       request('POST', '/api/tools/playfair/open', { message: cipherText, keyword }),
-    sha256: (input) => request('POST', '/api/tools/sha256', { input })
+    sha256: (input) => request('POST', '/api/tools/sha256', { input }),
+    rsaWrap: (secret, publicKey) => request('POST', '/api/tools/rsa/wrap', { secret, publicKey }),
+    rsaUnlock: (blob, privateKey) => request('POST', '/api/tools/rsa/unlock', { blob, privateKey })
   };
 })();

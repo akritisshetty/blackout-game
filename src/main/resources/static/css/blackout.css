@@ -634,3 +634,39 @@ table.tactical tr:hover td { background: rgba(57, 255, 136, .03); }
 }
 .built-by a { color: var(--neon-dim); text-decoration: none; border-bottom: 1px dotted var(--neon-dim); }
 .built-by a:hover { color: var(--neon); border-bottom-color: var(--neon); }
+
+/* ---------- learn / crypto lab ---------- */
+
+.theory {
+  margin-top: 14px;
+  border: 1px dashed var(--line-bright);
+  border-radius: 4px;
+  padding: 8px 12px;
+  background: rgba(83, 216, 255, 0.04);
+}
+[data-theme="light"] .theory { background: rgba(14, 127, 163, 0.04); }
+
+.theory summary {
+  cursor: pointer;
+  color: var(--cyan);
+  font-size: 11px;
+  letter-spacing: 1px;
+  list-style: none;
+}
+.theory[open] summary { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--line); }
+
+.theory-body {
+  color: var(--ink-dim);
+  font-size: 11px;
+  line-height: 1.8;
+}
+.theory-body ol, .theory-body ul { margin: 4px 0 0; padding-left: 18px; }
+.theory-body li { margin-bottom: 4px; }
+.theory-body b { color: var(--ink); }
+.theory-body code {
+  color: var(--neon);
+  background: var(--mono-bg);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+}

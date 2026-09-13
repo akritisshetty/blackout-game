@@ -1,6 +1,8 @@
 # BLACKOUT - How to Play
 
-A simple cryptography game. You get one mission at a time. Solve it, earn points, press NEXT. Four mission types repeat forever.
+A simple cryptography game. You get one mission at a time. Solve it, earn points, press NEXT. Three algorithms - **Playfair**, **RSA-2048**, **SHA-256** - power four mission types that repeat forever.
+
+New to the game? Open the **LEARN** tab first: it is a login-free interactive lab where you can practise all three algorithms before attempting missions.
 
 ## Start
 
@@ -33,6 +35,14 @@ They always come in this order:
 1. **Playfair cipher** (missions 1, 2, 4) - a 150-year-old letter-pair cipher. The keyword builds a 5x5 grid; pairs of letters are replaced by other pairs.
 2. **RSA-2048** (mission 4) - real modern encryption. Your browser creates a secret key the server never sees; the server locks things that only your key can open.
 3. **SHA-256** (mission 3) - a fingerprint of data. Two packages carry forged seals; only the genuine one's recomputed hash matches. Change even one letter and the fingerprint stops matching - that's how you spot the real package.
+
+## Learn tab (helps before you start)
+
+The **LEARN** tab is an interactive lab with all three algorithms - no codename needed:
+
+- **Playfair Lab** - type a keyword and watch the 5x5 grid build; encrypt/decrypt any message and see the letter pairs.
+- **SHA-256 Lab** - hash two inputs side by side and see the avalanche effect (one changed letter = completely different hash).
+- **RSA Lab** - mint a demo keypair, have the server lock a secret with your public key, unlock it with your private key - the SECRET DROP flow, in miniature.
 
 ## Enigma — Local Helper (clone-only)
 

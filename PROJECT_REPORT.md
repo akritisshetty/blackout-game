@@ -25,13 +25,14 @@
    - 5.2 RSA Algorithm
    - 5.3 SHA-256 Hash Function
 6. Simulation Details — How the Game Works
-7. Implementation Details
-8. Testing
-9. Deployment
-10. Challenges & Lessons Learned
-11. Limitations
-12. Conclusion
-13. References
+7. The Learning Centre (LEARN Tab)
+8. Implementation Details
+9. Testing
+10. Deployment
+11. Challenges & Lessons Learned
+12. Limitations
+13. Conclusion
+14. References
 
 ---
 
@@ -39,14 +40,21 @@
 
 Cryptography is a fundamental pillar of modern network security, yet it remains an abstract and intimidating subject for most students. Traditional teaching methods — textbook definitions, hand-written trace tables, and rote memorisation of algorithms — fail to convey *why* these algorithms matter and *how* they work in real systems.
 
-The problem this project addresses is: **How can students learn cryptographic concepts in a hands-on, engaging way that mirrors real-world application?**
+This project focuses on exactly **three** foundational algorithms — the **Playfair cipher** (classical symmetric), **RSA** (modern asymmetric), and **SHA-256** (hashing) — and asks the core question:
 
-Specifically, the project tackles the following sub-problems:
+> **How can teachers teach, and students learn, these three cryptographic algorithms in a hands-on, engaging way that mirrors real-world application?**
+
+The project therefore has a dual audience:
+
+1. **For teachers** — a tool they can take into the classroom and use to demonstrate each algorithm step by step, with interactive, live examples instead of static textbook figures.
+2. **For students** — a game in which they must *use* each algorithm themselves: encrypting messages, breaking intercepted ciphertext, verifying tamper-evident seals, and unlocking secrets with public-key cryptography.
+
+The problem is broken into the following sub-problems:
 
 1. Students struggle to understand the practical difference between symmetric ciphers, asymmetric ciphers, and hash functions when taught purely through theory.
-2. Classical algorithms like the Playfair cipher are historically important but rarely implemented by students themselves.
+2. The three chosen algorithms span three different eras and categories of cryptography, yet most textbooks treat them in isolation with no unifying practical exercise.
 3. Modern algorithms like RSA and SHA-256 are used everywhere (HTTPS, digital signatures, blockchain) but their internals feel like a black box.
-4. There is no single educational tool that brings all three categories — classical, modern symmetric, and modern asymmetric — together in one interactive experience.
+4. There is no single educational tool that brings all three — classical, modern asymmetric, and modern hashing — together in one interactive experience that a teacher can project and a student can play.
 
 ---
 
@@ -54,7 +62,7 @@ Specifically, the project tackles the following sub-problems:
 
 Cryptography is the science of securing communication by transforming readable data (plaintext) into an unreadable form (ciphertext). It has evolved over centuries — from simple substitution ciphers used by Roman generals, to the Enigma machine of World War II, to the mathematical public-key systems that secure every online transaction today.
 
-This project implements and demonstrates three foundational cryptographic techniques, each representing a different era and category of cryptography:
+This project implements and demonstrates exactly three cryptographic techniques, each representing a different era and category of cryptography:
 
 | Algorithm | Category | Era | Reversible? |
 |-----------|----------|-----|-------------|
@@ -64,13 +72,17 @@ This project implements and demonstrates three foundational cryptographic techni
 
 The project is built as **BLACKOUT — The Cipher Game**, a full-stack Java web application that teaches cryptography by making the player *use* it. Players take on the role of a spy, solving missions that require them to encrypt messages, decrypt intercepted communications, detect tampered packages, and unlock secret drops — all using real cryptographic algorithms.
 
-Additionally, a standalone desktop helper application called **Enigma** is included, which provides a Java Swing GUI for performing RSA, SHA-256, and Playfair operations independently, serving as both a learning aid and a cheat-sheet generator for the game.
+The complete system has three parts:
+
+- **The Game** — a Web app where students earn points by solving cryptographic missions by hand.
+- **The Learning Centre (LEARN tab)** — an interactive crypto lab where the same three algorithms can be explored freely, with live grids, live hashing, and live public-key encryption. No login required, so it is ideal for classroom projection.
+- **Enigma** — a standalone desktop helper application (Java Swing) that performs RSA, SHA-256, and Playfair operations independently, serving as a learning aid and a calculator for students solving missions by hand.
 
 ---
 
 ## 3. Proposed Solution
 
-The proposed solution is a two-part system:
+The proposed solution consists of three pieces built around a single idea: **students learn cryptography best by doing it.**
 
 ### Part A: BLACKOUT — The Web Game
 
@@ -85,10 +97,20 @@ The game presents four mission types that cycle endlessly:
 |---|-------------|----------------|----------------------|--------|
 | 1 | SEAL THE INTEL | Playfair Cipher (Encrypt) | Encrypt a plaintext message using a given keyword and the Playfair grid | +10 |
 | 2 | CRACK THE CODE | Playfair Cipher (Decrypt) | Decrypt a ciphertext message using a given keyword | +15 |
-| 3 | FIND THE FAKE | SHA-256 Hash | Three packages are presented; only ONE is genuine — the other two carry forged SHA-256 seals. The player re-hashes each package (in the game or via the enigma helper) to find the real one | +20 |
+| 3 | FIND THE FAKE | SHA-256 Hash | Three packages are presented; only ONE is genuine — the other two carry forged SHA-256 seals. The player re-hashes each package to find the real one | +20 |
 | 4 | SECRET DROP | RSA-2048 + Playfair | The player's browser-generated RSA key unlocks a secret, then the player decrypts a Playfair-encrypted message | +25 |
 
-### Part B: Enigma — The Desktop Helper
+### Part B: The Learning Centre (LEARN tab)
+
+A dedicated classroom-friendly tab with three free-play labs, one for each algorithm. It requires no codename or login, so a teacher can open it on a projector and demonstrate:
+
+- **Playfair Lab** — build the live 5×5 grid for any keyword and encrypt/decrypt any message, step by step.
+- **SHA-256 Lab** — hash two inputs side by side and observe the *avalanche effect* live.
+- **RSA Lab** — mint a throwaway RSA-2048 keypair in the browser, have the server lock a secret under the public key, then unlock it with the private key entirely in the browser.
+
+Each lab includes a collapsible "How it works (theory)" panel with the mathematical steps, so the tool doubles as lecture material.
+
+### Part C: Enigma — The Desktop Helper
 
 A standalone Java Swing application that implements the same three algorithms (RSA, SHA-256, Playfair) with a graphical interface. It allows the user to:
 
@@ -98,7 +120,7 @@ A standalone Java Swing application that implements the same three algorithms (R
 - View the Playfair 5×5 matrix
 - View generated RSA key pairs
 
-This serves as a learning aid for students who want to understand the algorithms step-by-step.
+This serves as a learning aid for students who want to understand the algorithms step-by-step and as a calculator while solving missions.
 
 ---
 
@@ -127,12 +149,13 @@ BLACKOUT Project
 │
 ├── Frontend (Static)
 │   ├── index.html        — Single-page game client
-│   ├── css/blackout.css  — Dark tactical theme (636 lines)
+│   ├── css/blackout.css  — Dark tactical theme
 │   └── js/
 │       ├── api.js        — Fetch wrapper for all API calls
 │       ├── ui.js         — DOM helpers, toast notifications, status bar
 │       ├── badge.js      — WebCrypto RSA-2048 keypair minting
-│       └── game.js       — Full game loop, mission rendering, scoring
+│       ├── game.js       — Full game loop, mission rendering, scoring
+│       └── learn.js      — The Learning Centre (three interactive labs)
 │
 ├── enigma/               — Standalone desktop helper (clone-only)
 │   ├── MainUI.java       — Swing GUI entry point
@@ -154,7 +177,13 @@ The most interesting technical feature is that each player's RSA-2048 keypair is
 
 This works because Java's `RSA/ECB/OAEPWithSHA-256AndMGF1Padding` and WebCrypto's `RSA-OAEP` with SHA-256 are wire-compatible — verified by cross-platform tests.
 
-### 4.3 Design Decision: No Database
+This feature is itself a teaching moment: it demonstrates, in the clearest possible way, the entire point of asymmetric cryptography — *publish your public key freely, keep your private key secret, and anyone (including the game server) can send you messages only you can read.*
+
+### 4.3 The Learning Centre — Tying Tools to Theory
+
+The LEARN tab exposes the very same server engines that generate and score missions, but as free-play tools. This means whatever a student practises in the lab is *exactly* what they are tested on in the missions — there is no artificial gap between "studying" and "playing". A teacher can demonstrate an algorithm in the lab, then immediately send the class into the corresponding mission.
+
+### 4.4 Design Decision: No Database
 
 All state is stored in-memory using `ConcurrentHashMap`:
 
@@ -170,6 +199,14 @@ This was a deliberate choice:
 
 ## 5. Algorithms Implemented
 
+Exactly three algorithms are implemented: the **Playfair cipher**, **RSA**, and **SHA-256**. These were chosen deliberately because together they cover the three great families of cryptography:
+
+1. a *classical symmetric* cipher (Playfair),
+2. a *modern asymmetric* cipher (RSA),
+3. a *cryptographic hash function* (SHA-256).
+
+No other algorithms are present in the codebase.
+
 ### 5.1 Playfair Cipher
 
 #### 5.1.1 History
@@ -178,7 +215,7 @@ Invented by Sir Charles **Wheatstone** in 1854, the cipher was promoted by Lord 
 
 #### 5.1.2 Mathematical Foundation
 
-The Playfair cipher operates on **pairs of letters** (digraphs) rather than individual characters, making simple frequency analysis significantly harder than with monoalphabetic ciphers like the Caesar cipher.
+The Playfair cipher operates on **pairs of letters** (digraphs) rather than individual characters, making simple frequency analysis significantly harder than with monoalphabetic substitution.
 
 **Step 1: Key Square Construction**
 
@@ -200,14 +237,14 @@ U  V  W  X  Z
 
 1. Convert plaintext to uppercase; replace J → I.
 2. Split into pairs of letters (digraphs).
-3. If both letters in a pair are identical, insert **X** between them.
+3. If both letters in a pair are identical, insert **X** between them (use **Q** if the duplicate letter is itself X).
 4. If the total length is odd, append **X** at the end.
 
 **Example:** `BALLOON` → `BA LX LO ON`
 
 **Step 3: Encryption Rules**
 
-For each digraph `(A, B)`, locate their positions `(row₁, col₁)` and `(row₂, col₂)` in the 5×5 grid:
+For each digraph `(A, B)`, locate their positions in the 5×5 grid:
 
 | Condition | Rule |
 |-----------|------|
@@ -245,86 +282,51 @@ S  T  U  V  X
 
 **Step 2 — Prepare the text:**
 
-HELLO → HE LX LO (X inserted between L and L because they are identical; O is left alone with an implicit X at end if needed, but here we pair as HE-LX-LO)
+HELLO → HE LX LO (X inserted between L and L because they are identical)
 
 **Step 3 — Encrypt each digraph:**
 
 - **HE**: H is at (2,2), E is at (0,1). Rectangle rule → H becomes (2,1) = **G**, E becomes (0,2) = **Y** → **GY**
-- **LX**: L is at (3,0), X is at (4,4). Rectangle rule → L becomes (3,4) = **Q**, X becomes (4,0) = **S** → **QS**
-- **LO**: L is at (3,0), O is at (0,4). Rectangle rule → L becomes (3,4) = **Q**, O becomes (0,0) = **K** → **QK**
+- **LX**: rectangle rule → **IZ**
+- **LO**: rectangle rule → **SC**
 
-Wait, let me re-verify with the actual matrix positions. Actually, the exact output depends on the implementation. Let me use the verified test vector from our code:
-
-**Known test vector from PlayfairEngineTest:** `HELLO` with keyword `KEYWORD` → `GYIZSC`
-
-**Step-by-step with the test vector:**
-
-```
-Plaintext:  H  E  L  L  O
-Prepared:   H  E  L  X  L  O  (X inserted between duplicate L's)
-
-Digraphs:   HE  LX  LO
-
-HE → GY  (rectangle swap)
-LX → IZ  (rectangle swap)  
-LO → SC  (rectangle swap)
-
-Ciphertext: GY IZ SC → GYIZSC
-```
+**Ciphertext: GYIZSC** — this matches the verified test vector in `PlayfairEngineTest`.
 
 #### 5.1.4 More Examples
 
 **Example 2: BALLOON** with keyword **MONARCHY**
 
 ```
-Matrix:
-M  O  N  A  R
-C  H  Y  B  D
-E  F  G  I  K
-L  P  Q  S  T
-U  V  W  X  Z
-
 Plaintext:  B  A  L  L  O  O  N
 Prepared:   B  A  L  X  L  O  O  N  (X between duplicate L's)
-
 Digraphs:   BA  LX  LO  ON
-
-BA → (0,3)(2,0) rectangle → (0,0)(2,3) → M I
-LX → (3,0)(4,3) rectangle → (3,3)(4,0) → S U  
-LO → (3,0)(0,1) rectangle → (3,1)(0,0) → P M
-ON → (0,1)(0,2) same row → (0,2)(0,3) → N A
-
-Ciphertext: MI SU PM NA → MISUPMNA
-
-From PlayfairEngineTest: BALLOON → CBIZSCES (with KEYWORD matrix)
 ```
+
+Monarchy grid and the rectangle/row rules yield the ciphertext `MISUPMNA`.
 
 **Example 3: SPY** with keyword **KEYWORD**
 
 ```
 Plaintext:  S  P  Y
 Prepared:   S  P  Y  X  (odd length, append X)
-
 Digraphs:   SP  YX
-
-SP → rectangle swap
-YX → rectangle swap
-
-From PlayfairEngineTest: SPY → MQWV
 ```
+
+Verified test vector: `SPY` → `MQWV`.
 
 #### 5.1.5 Implementation in Code
 
 The Playfair cipher is implemented in two places:
 
-**Server-side — `PlayfairEngine.java` (213 lines):**
-- `buildMatrix(keyword)` — constructs the 5×5 grid using a `LinkedHashSet` for O(1) membership testing and insertion-order preservation
+**Server-side — `PlayfairEngine.java`:**
+- `buildMatrix(keyword)` — constructs the 5×5 grid using a `boolean[]` membership table for O(1) checks and insertion-order preservation
 - `encrypt(plaintext, keyword)` — normalises input, builds digraphs, applies encryption rules
 - `decrypt(ciphertext, keyword)` — reverses the encryption rules
 - `normalize(text)` — converts to uppercase, replaces J→I, strips non-alpha characters
+- `bigramPreview(plaintext, keyword)` — shows the padded digraph stream (used by the UI and the Learning Centre)
 - Throws `IllegalArgumentException` on odd ciphertext length or empty payload
 
-**Client-side — `Playfair.java` in enigma/ (266 lines):**
+**Client-side — `Playfair.java` in enigma/:**
 - Same rules as PlayfairEngine
 - Adds ASCII matrix display for visual learning
 - Space-separated digraph output for readability
@@ -336,7 +338,11 @@ The Playfair cipher is implemented in two places:
 | 25! × 25² possible key squares (large keyspace) | Only 25 distinct cipher letters (no J) |
 | Digraphic; resists simple frequency analysis | 600 digraph frequencies are still analysable |
 | Easy to use manually in the field | Vulnerable to known-plaintext attack |
-| Significant improvement over Caesar/Vigenère | Not suitable for modern secure communication |
+| Excellent tool for teaching substitution and key-space concepts | Not suitable for modern secure communication |
+
+#### 5.1.7 Why It Is Excellent for Teaching
+
+The Playfair cipher is small enough to trace by hand on a grid yet rich enough to teach three important ideas: **keyspace** (how the keyword changes the entire grid), **structural rules** (row/column/rectangle), and **why digraphs defeat simple letter-frequency analysis**. Students genuinely enjoy the mechanical process of encrypting their first message.
 
 ---
 
@@ -434,14 +440,14 @@ Decrypted: "MONARCHY" ✓
 
 RSA is implemented in two places:
 
-**Server-side — `AsymmetricEngine.java` (135 lines):**
+**Server-side — `AsymmetricEngine.java`:**
 - Uses `java.security.KeyPairGenerator` with `RSA` algorithm, 2048-bit key size
 - OAEP padding: `RSA/ECB/OAEPWithSHA-256AndMGF1Padding` (wire-compatible with WebCrypto)
 - `MAX_PLAINTEXT_BYTES = 190` (2048-bit key minus OAEP overhead)
 - Keys stored as Base64 X.509 (public) and PKCS#8 (private) strings
 - Methods: `generateKeyPair()`, `encrypt()`, `decrypt()`, `encodePublicKey()`, `decodePublicKey()`
 
-**Client-side (Enigma) — `RSA.java` (196 lines):**
+**Client-side (Enigma) — `RSA.java`:**
 - Textbook RSA using `java.math.BigInteger` (no OAEP padding — teaching implementation)
 - 1024-bit keys (512-bit primes) for speed
 - `BigInteger.probablePrime(512, SecureRandom)` for prime generation
@@ -457,6 +463,10 @@ RSA is implemented in two places:
 | Private key | Must never be revealed; in BLACKOUT it stays in browser localStorage |
 | Quantum threat | Shor's algorithm on a quantum computer could factor n efficiently |
 | Common use | TLS/HTTPS, SSH, digital signatures, secure key exchange |
+
+#### 5.2.6 Why It Is Excellent for Teaching
+
+RSA is the moment a student's mental model changes. The SECRET DROP mission (and the RSA Lab) makes the key idea tactile: the student's *own* public key is used by a remote server to lock a message, and only their never-shared private key opens it. This is the real-world key-distribution problem, experienced first-hand rather than read about.
 
 ---
 
@@ -559,7 +569,7 @@ Input:  "Hello World!"  (one character changed — added '!')
 Output: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
 ```
 
-Notice that changing just one character completely changes the output — this is the avalanche effect.
+Notice that changing just one character completely changes the output — the avalanche effect. The SHA-256 Lab demonstrates this live, side by side.
 
 #### 5.3.5 Use Cases
 
@@ -575,20 +585,24 @@ Notice that changing just one character completely changes the output — this i
 
 SHA-256 is implemented in three places:
 
-**Server-side — `Sha256Engine.java` (37 lines):**
+**Server-side — `Sha256Engine.java`:**
 - Thin wrapper over `java.security.MessageDigest.getInstance("SHA-256")`
 - Returns 64 lowercase hexadecimal characters
 - JCA-certified, hardware-accelerated, platform-standard implementation
 
-**Server-side — `DeadDropProtocol.java` (52 lines):**
+**Server-side — `DeadDropProtocol.java`:**
 - `canonicalPackage(payload, keyBlob)` = `payload + '|' + keyBlob`
 - `computeSeal(package)` = SHA-256 of the canonical form
 - `verifySeal()` uses constant-time `MessageDigest.isEqual` to prevent timing attacks
 
-**Client-side (Enigma) — `SHA256.java` (111 lines):**
+**Client-side (Enigma) — `SHA256.java`:**
 - Delegates to `java.security.MessageDigest`
 - `hash(text)` returns hex string
 - `hashWithDetails(text)` adds metadata (input length, algorithm name)
+
+#### 5.3.7 Why It Is Excellent for Teaching
+
+The FIND THE FAKE mission turns "irreversibility" and "avalanche effect" — two properties students find abstract — into a concrete detective puzzle. A student who has watched one forged seal fail to match after a single letter changed will never again doubt why hashes underpin data integrity.
 
 ---
 
@@ -603,11 +617,11 @@ mvn spring-boot:run
 
 1. The player enters a **codename** (e.g., "SHADOW") and presses START.
 2. The server registers the agent (or resumes an existing session).
-3. The browser automatically generates an RSA-2048 keypair using WebCrypto and registers the public key with the server.
+3. The browser automatically generates an RSA-2048 keypair using WebCrypto and registers the public key with the server. No buttons — it "just happens", like real background key exchange.
 
 ### 6.2 Mission Cycle
 
-Missions always come in this fixed order:
+Missions always come in this fixed order, and each one teaches a different facet of the three algorithms:
 
 **Mission 1: SEAL THE INTEL (Playfair Encryption) — +10 points**
 
@@ -706,17 +720,54 @@ The genuine package's seal equals SHA-256(payload|keyBlob) recomputed by the pla
 | Wrong answer | 0 points, but the correct answer is revealed |
 | Mission expires | 15 minutes per mission; expired missions must be replaced |
 
+After every solve — right or wrong — the game shows a **"HOW IT WAS CALCULATED"** panel that walks through the exact steps the answer came from. This turns even a failed attempt into a learning moment, which is precisely what an educational tool should do.
+
 ### 6.4 Leaderboard
 
 - Scores accumulate across missions within a session
 - The TOP AGENTS tab shows all agents on this machine, sorted by score
 - Scores reset when the server restarts (by design — session-scoped)
 
+The leaderboard adds light gamification: students are motivated to solve by hand for full points, because that is the only way to climb the board.
+
 ---
 
-## 7. Implementation Details
+## 7. The Learning Centre (LEARN Tab)
 
-### 7.1 Technology Choices
+The LEARN tab is the teacher-facing heart of the project. It is deliberately **login-free** and always available, so it can be opened before the class settles into play.
+
+### 7.1 Playfair Lab
+
+- Type any keyword → the live 5×5 grid is fetched from the identical engine used in missions and rendered cell by cell.
+- Type any message → ENCRYPT shows the ciphertext *and* the padded bigram stream (e.g. `HE LX LO`), so a teacher can narrate the rules as they happen.
+- DECRYPT reverses the process, so round-tripping `HELLO → GYIZSC → HELLO` can be demonstrated in one click.
+- The theory panel states the three grid rules and the historical context.
+
+### 7.2 SHA-256 Lab
+
+- Two side-by-side inputs are hashed together.
+- The default pair `HELLO WORLD` vs `HELLO WORLD!` makes the **avalanche effect** obvious at first click — one added `!` produces a completely different 64-hex digest.
+- The theory panel links the property to real-world integrity checking and the FIND THE FAKE mission.
+
+### 7.3 RSA Lab
+
+- MINT DEMO KEYS generates a throwaway RSA-2048 OAEP keypair in the browser (WebCrypto) — never registered with the server, invisible to the leaderboard.
+- LOCK WITH PUBLIC KEY sends a secret to the server, which wraps it under the *public* key — demonstrating the relay behaviour the real game uses.
+- UNLOCK WITH PRIVATE KEY decrypts entirely in the browser, dramatically showing that the private key never leaves the machine.
+- The theory panel covers key generation, the factorisation problem, and OAEP padding.
+
+### 7.4 Classroom Usage Suggestions
+
+1. **Introduce** — open the LEARN tab, walk through each lab once, narrating the underlying maths.
+2. **Practise** — let students experiment freely in the labs for a few minutes.
+3. **Assess** — send them into the matching missions; the leaderboard gives instant feedback.
+4. **Debrief** — show the "HOW IT WAS CALCULATED" panel after each mission round.
+
+---
+
+## 8. Implementation Details
+
+### 8.1 Technology Choices
 
 | Technology | Choice | Reason |
 |------------|--------|--------|
@@ -727,12 +778,12 @@ The genuine package's seal equals SHA-256(payload|keyBlob) recomputed by the pla
 | Big integers (enigma) | `java.math.BigInteger` | Handles arbitrarily large integers natively; no overflow |
 | Prime generation (enigma) | `java.security.SecureRandom` | Cryptographic-quality randomness |
 | SHA-256 | `java.security.MessageDigest` | JCA-certified, hardware-accelerated, platform standard |
-| Playfair matrix | `LinkedHashSet` | O(1) membership test + insertion-order iteration |
+| Playfair matrix | `boolean[]` membership table | O(1) membership test in order-preserving construction |
 | GUI (enigma) | Java Swing | No external dependencies; runs on any JRE |
 | Build | Maven | Standard Java build tool, Spring Boot plugin |
 | Deployment | Docker + Render | Single container, port from `$PORT` |
 
-### 7.2 Error Handling Strategy
+### 8.2 Error Handling Strategy
 
 - Algorithm classes throw `IllegalArgumentException` with descriptive messages
 - A custom `CryptoOperationException` runtime exception covers all crypto failures
@@ -742,7 +793,7 @@ The genuine package's seal equals SHA-256(payload|keyBlob) recomputed by the pla
   - **Yellow** — informational message
   - **Red** — error occurred
 
-### 7.3 REST API
+### 8.3 REST API
 
 Base URL: `http://127.0.0.1:8080`
 
@@ -763,11 +814,11 @@ Base URL: `http://127.0.0.1:8080`
 
 ---
 
-## 8. Testing
+## 9. Testing
 
-The project includes **24 automated tests**, all passing:
+The project includes **24 automated tests**, all passing. Tests are a first-class citizen precisely because an educational tool must give *correct* answers — a wrong "expected answer" would actively mis-teach.
 
-### 8.1 Crypto Engine Tests (18 tests)
+### 9.1 Crypto Engine Tests (18 tests)
 
 **PlayfairEngineTest (8 tests):**
 - Matrix well-formedness: keyword "KEYWORD" produces `K E Y W O R D A B C F G H I J L M N P Q S T U V X`
@@ -793,7 +844,7 @@ The project includes **24 automated tests**, all passing:
 - Seal determinism: same input always produces same 64-hex-char seal
 - Tamper detection: mutated payload or null/empty seal correctly flagged as tampered
 
-### 8.2 Game Flow Integration Tests (6 tests)
+### 9.2 Game Flow Integration Tests (6 tests)
 
 These use Spring's `MockMvc` to test the full HTTP request/response cycle:
 
@@ -806,7 +857,7 @@ These use Spring's `MockMvc` to test the full HTTP request/response cycle:
 
 ---
 
-## 9. Deployment
+## 10. Deployment
 
 ### Local Development
 
@@ -842,7 +893,7 @@ Requires only a JDK (Java 8 or later). No external libraries.
 
 ---
 
-## 10. Challenges & Lessons Learned
+## 11. Challenges & Lessons Learned
 
 1. **Java ↔ WebCrypto RSA Interoperability.** Getting `RSA-OAEP` ciphertexts produced in the browser to decrypt correctly in Java required matching the OAEP hash (SHA-256) *and* the MGF1 hash exactly. A mismatch in either causes silent decryption failure. This was resolved by writing cross-platform tests that encrypt in Java and decrypt in a WebCrypto mock, and vice versa.
 
@@ -850,13 +901,15 @@ Requires only a JDK (Java 8 or later). No external libraries.
 
 3. **Statelessness Discipline.** Removing H2/JPA forced clean separation between durable-ish state (`AgentStore` with ConcurrentHashMap) and ephemeral state (`MissionSessionStore` with TTL sweeping). This simplified the service layer and eliminated configuration complexity.
 
-4. **Zero-Toolchain Frontend.** Proved that a reactive single-page game client is achievable with plain JavaScript modules when the REST API is well-shaped — no React, no npm, no build step, no transpilation.
+4. **Zero-Toolchain Frontend.** Proved that a reactive single-page game client is achievable with plain JavaScript modules when the REST API is well-shaped — no React, no npm, no build step, no transpilation. The Learning Centre (`learn.js`) reuses the exact same API wrappers as the game.
 
-5. **Semantic Security of OAEP.** Discovered that RSA with OAEP padding produces different ciphertexts for the same plaintext each time (due to random padding). This is correct behaviour (semantic security) but initially confused testing — assertions had to compare decrypted plaintext, not ciphertext equality.
+5. **Semantic Security of OAEP.** Discovered that RSA with OAEP padding produces different ciphertexts for the same plaintext each time (due to random padding). This is correct behaviour (semantic security) but initially confused testing — assertions had to compare decrypted plaintext, not ciphertext equality. It also became a teaching point in the RSA Lab.
+
+6. **Teaching, not just gamification.** The biggest design lesson was that the *feedback loop* matters more than the score. Adding the "HOW IT WAS CALCULATED" panel and the free-play labs converted every interaction — win, lose, or idle experimentation — into instruction.
 
 ---
 
-## 11. Limitations
+## 12. Limitations
 
 | Limitation | Detail |
 |------------|--------|
@@ -869,11 +922,11 @@ Requires only a JDK (Java 8 or later). No external libraries.
 
 ---
 
-## 12. Conclusion
+## 13. Conclusion
 
-This project demonstrates the evolution of cryptographic thinking across three centuries:
+This project demonstrates three foundational cryptographic algorithms, one from each era of the field:
 
-- **Playfair Cipher (1854)** shows how simple grid-based digraphic substitution was a significant advance over Caesar and Vigenère ciphers, yet remains vulnerable to statistical analysis. It is excellent for teaching the concept of substitution ciphers and frequency analysis resistance.
+- **Playfair Cipher (1854)** shows how simple grid-based digraphic substitution was a significant advance over monoalphabetic ciphers, yet remains vulnerable to statistical analysis. It is excellent for teaching the concept of substitution ciphers and keyspace.
 
 - **RSA Algorithm (1977)** introduced the revolutionary concept of public-key cryptography, solving the key-distribution problem that had plagued symmetric systems for millennia. It enables secure communication over untrusted channels and forms the backbone of internet security (HTTPS, SSH, digital signatures).
 
@@ -881,13 +934,13 @@ This project demonstrates the evolution of cryptographic thinking across three c
 
 Together, they illustrate the shift from **security through obscurity** to **mathematically provable computational hardness**, which is the foundation of all modern cryptographic systems.
 
-The BLACKOUT game makes these concepts tangible through interactive gameplay. Players don't just read about algorithms — they encrypt messages, decrypt intercepts, detect tampering, and manage RSA keys. The Enigma desktop helper reinforces understanding by letting students experiment with each algorithm independently.
+The BLACKOUT game makes these concepts tangible through interactive gameplay. Players don't just read about algorithms — they encrypt messages, decrypt intercepts, detect tampering, and manage RSA keys. The **Learning Centre** makes the same engines available as free-play teaching tools, bridging the gap between the lecture and the game. The Enigma desktop helper reinforces understanding by letting students experiment with each algorithm independently.
 
-This project successfully achieves its goal: a dependency-light, single-jar educational tool where every mission teaches a real cipher, and the most interesting lesson (browser-held RSA keys unlocking server-side locks) emerges naturally from play.
+This project successfully achieves its goal: a dependency-light, single-jar educational tool where every mission teaches a real cipher, the game explains how each answer was calculated, and the most interesting lesson (browser-held RSA keys unlocking server-side locks) emerges naturally from play. It is a tool that works both ways — a teacher can teach with it, and a student can learn from it.
 
 ---
 
-## 13. References
+## 14. References
 
 1. Rivest, R. L., Shamir, A., & Adleman, L. (1978). *A method for obtaining digital signatures and public-key cryptosystems.* Communications of the ACM, 21(2), 120–126.
 

@@ -2,7 +2,7 @@
 
 **The Cipher Game — a simple full stack Java web game that teaches cryptography by making you use it.**
 
-One screen, one mission at a time. Four mission types repeat forever:
+One screen, one mission at a time. Three algorithms — **Playfair**, **RSA-2048**, **SHA-256** — power four mission types that repeat forever:
 
 | # | Mission | Algorithm | Points |
 |---|---|---|---|
@@ -12,6 +12,8 @@ One screen, one mission at a time. Four mission types repeat forever:
 | 4 | SECRET DROP | **RSA-2048** unlock + Playfair | +25 |
 
 Solve by hand for full points or press AUTO-SOLVE for half. Wrong answers reveal the correct answer and cost nothing. Scores live in memory with a TOP AGENTS leaderboard (they reset when the server restarts — by design).
+
+**Learning Centre:** the LEARN tab is a login-free interactive lab for all three algorithms — a live 5×5 Playfair grid, a side-by-side SHA-256 avalanche demo, and an RSA lab where the server locks a secret under your public key and your browser unlocks it. Teachers can project it during a lesson; students can practise there before attempting missions.
 
 > **How to play:** [INSTRUCTIONS.md](INSTRUCTIONS.md) — it fits on one page.
 
@@ -35,7 +37,7 @@ src/main/java/com/blackout/
 ├── dto/, dto/game/
 ├── service/       AgentService · MissionService
 └── controller/    agents · missions · tools (+ global exception handler)
-src/main/resources/static/   index.html · css/blackout.css · js/{api,ui,badge,game}.js
+src/main/resources/static/   index.html · css/blackout.css · js/{api,ui,badge,game,learn}.js
 ```
 
 The neat part: your RSA badge is minted **in the browser** (WebCrypto, automatic — no buttons) and registered by its public half only. The relay locks mission keywords under that public key; your browser unlocks them with the private key that never left your machine. Java's `RSA/ECB/OAEPWithSHA-256AndMGF1Padding` and WebCrypto's `RSA-OAEP` + SHA-256 are wire-compatible.

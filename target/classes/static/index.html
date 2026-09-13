@@ -42,6 +42,7 @@
     <nav class="tabs" id="tabs">
       <button class="tab active" data-view="play">PLAY</button>
       <button class="tab" data-view="top">TOP AGENTS</button>
+      <button class="tab" data-view="learn">LEARN</button>
     </nav>
 
     <!-- ================= PLAY ================= -->
@@ -60,10 +61,14 @@
           <b>2. CRACK THE CODE</b> decrypt (+15)<br />
           <b>3. FIND THE FAKE</b> spot the tampered package (+20) &nbsp;
           <b>4. SECRET DROP</b> unlock RSA, then decrypt (+25)<br /><br />
-          Solve by hand for full points, or press AUTO for half. Wrong answers cost nothing.
+          Solve by hand for full points, or press AUTO for half. Wrong answers cost nothing.<br />
+          New here? Open the <b>LEARN</b> tab first - it is an interactive lab for all three algorithms.
         </p>
       </div>
       <div id="play-area"></div>
+      <footer class="footer-note">
+        Spring Boot relay &middot; Playfair = encryption &middot; RSA = key unlocking &middot; SHA-256 = tamper check
+      </footer>
     </section>
 
     <!-- ================= TOP AGENTS ================= -->
@@ -74,9 +79,10 @@
       </div>
     </section>
 
-    <footer class="footer-note">
-      Spring Boot relay &middot; Playfair = encryption &middot; RSA = key unlocking &middot; SHA-256 = tamper check
-    </footer>
+    <!-- ================= LEARN ================= -->
+    <section class="view" id="view-learn">
+    </section>
+
     <div class="built-by">Built by <a href="https://github.com/akritisshetty" target="_blank" rel="noopener">Akriti S Shetty</a></div>
   </div>
 
@@ -90,6 +96,7 @@
   <script src="js/ui.js"></script>
   <script src="js/badge.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/learn.js"></script>
   <script>
     (function() {
       var btn = document.getElementById('theme-toggle');
